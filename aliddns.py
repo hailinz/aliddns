@@ -41,21 +41,7 @@ def read_yaml(filename):
         print(e)
         sys.exit(-1)
 
-def write_to_file():
-    time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    #current_script_path = sys.argv[0]
-    #print current_script_path
-    # 绝对路径获取
-    current_script_path = os.path.abspath(sys.argv[0])
-    current_script_path = os.path.dirname(current_script_path)
-    log_file = current_script_path + '/' + 'aliyun_ddns.log'
-    #print log_file
-    write = open(log_file, 'a')
-    write.write(time_now + ' ' + str(rc_value)  + ' ' + str(rc_record_id)+ '\n')
-    write.close()
-    return
-
-def GetDNSRecord(yaml_data,client,DomainName):
+def GetDNSRecord(yaml_data,client,DomainName,RR):
     try:
         request = DescribeDomainRecordsRequest()
         request.set_accept_format('json')
@@ -63,9 +49,9 @@ def GetDNSRecord(yaml_data,client,DomainName):
         response = client.do_action_with_exception(request)
         json_data = json.loads(str(response, encoding='utf-8'))
 
-        for RecordId in json_data['DomainRecords']['Record']:
-            if yaml_data['UserData']['RR'] == RecordId['RR']:
-                return RecordId
+        for Record in json_data['DomainRecords']['Record']:
+            if RR == Record['RR']:
+                return Record
 
     except Exception as e:
         print("获取Record失败")
@@ -98,6 +84,7 @@ def UpdateDomainRecord(client,yaml_data,Record):
 
         #如果是泛解析则追加@的解析
         if '*' == yaml_data['UserData']['RR']:
+            Record = GetDNSRecord(yaml_data,client,yaml_data['UserData']['DomainName'],'@')
             request = UpdateDomainRecordRequest()   
             request.set_accept_format('json')
             request.set_Value(DomainValue)
@@ -118,7 +105,7 @@ def main():
     global now_ip
     now_ip = GetNowIp()
     client = AliAccessKey(yaml_data['AliyunData']['AccessKey_ID'],yaml_data['AliyunData']['Access_Key_Secret'],yaml_data['AliyunData']['region_id'])
-    Record = GetDNSRecord(yaml_data,client,yaml_data['UserData']['DomainName'])
+    Record = GetDNSRecord(yaml_data,client,yaml_data['UserData']['DomainName'],yaml_data['UserData']['RR'])
     UpdateDomainRecord(client,yaml_data,Record)
 
 if __name__ == "__main__" :
