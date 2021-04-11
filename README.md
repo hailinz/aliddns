@@ -2,18 +2,23 @@
   <br>Aliddns<br>
 </h1>
 
-<h5 align="center">阿里DDNS 的刷新脚本</h5>
+<h5 align="center">阿里DDNS 的刷新脚本,可用于动态ip环境下的定时任务或手动指定刷新.</h5>
 
-## 功能
->阿里DDNS 的刷新脚本,可用于动态ip环境下的定时任务或手动指定刷新.
+
 
 ## 准备
 ### 1.准备环境
+```
+pip3 install pyyaml 
 
-pip3 install pyyaml
-pip3 install aliyun-python-sdk-core-v3
-pip3 install aliyun-python-sdk-alidns
-
+// 安装阿里云支持库
+//   如果您使用Python 2.x，执行以下命令
+//pip install aliyun-python-sdk-core
+//   如果您使用Python 3.x，执行以下命令
+pip install aliyun-python-sdk-core-v3
+   
+pip install aliyun-python-sdk-alidns
+```
 
 ### 2.配置文件
 ```
